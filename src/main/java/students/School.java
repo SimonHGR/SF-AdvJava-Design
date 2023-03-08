@@ -3,11 +3,12 @@ package students;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 // Predicate<Student> :)
-interface CriterionStudent {
-  boolean test(Student s);
-}
+//interface CriterionStudent {
+//  boolean test(Student s);
+//}
 
 public class School {
 
@@ -23,29 +24,56 @@ public class School {
     School.smartnessThreshold = smartnessThreshold;
   }
 
-  public static List<Student> getSmartStudents(
-      List<Student> ls) {
-//  public static List<Student> getSmartStudents(
-//      List<Student> ls, double threshold) {
-    List<Student> rv = new ArrayList<>();
-    for (Student s : ls) {
-      if (s.getGpa() > smartnessThreshold) {
+  // BOTH these patterns, strategy and command, use an expression
+  // usually through a variable, describing BEHVIOR, so that
+  // the behavior can VARY at runtime!!!
+
+  // if we STORE this behavioral thing for later use...
+  // this is the Strategy pattern
+//  private static Predicate<>... strategy
+
+  // this is filter :)
+  // passing behavior at the moment of requesting some larger
+  // operation, so that the behavior passed can "tailor" the
+  // larger operation...
+  // Strategy
+  public static <E> List<E> getIntersting(
+      List<E> ls, Predicate<E> ps) {
+    List<E> rv = new ArrayList<>();
+    for (E s : ls) {
+      if (ps.test(s)) {
         rv.add(s);
       }
     }
     return(rv);
   }
 
-  public static List<Student> getEnthusiasticStudents(
-      List<Student> ls, int threshold) {
-    List<Student> rv = new ArrayList<>();
-    for (Student s : ls) {
-      if (s.getCourses().size() > threshold) {
-        rv.add(s);
-      }
-    }
-    return(rv);
-  }
+//  public static List<Student> getInterstingStudents(
+//      List<Student> ls, Predicate<Student> ps) {
+////    public static List<Student> getSmartStudents
+////      List<Student> ls) {
+////  public static List<Student> getSmartStudents(
+////      List<Student> ls, double threshold) {
+//    List<Student> rv = new ArrayList<>();
+//    for (Student s : ls) {
+////      if (s.getGpa() > smartnessThreshold) {
+//      if (ps.test(s)) {
+//        rv.add(s);
+//      }
+//    }
+//    return(rv);
+//  }
+//
+//  public static List<Student> getEnthusiasticStudents(
+//      List<Student> ls, int threshold) {
+//    List<Student> rv = new ArrayList<>();
+//    for (Student s : ls) {
+//      if (s.getCourses().size() > threshold) {
+//        rv.add(s);
+//      }
+//    }
+//    return(rv);
+//  }
 
 //  public static List<Student> getSmartStudents(List<Student> ls) {
 //    List<Student> rv = new ArrayList<>();
@@ -82,9 +110,14 @@ public class School {
 
     System.out.println("Marketing...");
 //    showAll(getSmartStudents(roster, 3.0), System.out);
-    showAll(getSmartStudents(roster), System.out);
+//    showAll(getInterstingStudents(roster, s -> s.getGpa() > 3.0), System.out);
+    showAll(getIntersting(roster, s -> s.getGpa() > 3.0), System.out);
     System.out.println("Professors...");
     School.setSmartnessThreshold(3.5);
-    showAll(getSmartStudents(roster), System.out);
+//    showAll(getSmartStudents(roster), System.out);
+    Predicate<Student> selectionCriterion = s -> s.getCourses().size() > 2;
+    showAll(
+        getIntersting(roster, selectionCriterion),
+        System.out);
   }
 }
